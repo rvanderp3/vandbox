@@ -1,0 +1,15 @@
+{
+	"defaultAction": "SCMP_ACT_LOG",
+	"syscalls": [
+		{
+			"names": [
+				"kexec_file_load",
+				"kexec_load",
+				"reboot"
+			],
+			"action": "SCMP_ACT_ERRNO",
+			"errnoRet": 1,
+			"comment": "Always blocked even in record mode"
+		}
+	]
+}

@@ -1,0 +1,9 @@
+# Runtime artifacts
+workspace/
+audit-logs/
+
+# Generated seccomp profiles
+seccomp/generated.json
+
+# Claude Code local settings
+.claude/

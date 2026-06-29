@@ -1,0 +1,25 @@
+FROM vandbox:latest
+
+RUN dnf install -y git && \
+    dnf clean all && \
+    rm -rf /var/cache/dnf
+
+RUN ARCH=$(uname -m) && \
+    if [ "$ARCH" = "x86_64" ]; then ARCH="x64"; fi && \
+    if [ "$ARCH" = "aarch64" ]; then ARCH="arm64"; fi && \
+    TMP=$(mktemp -d) && \
+    curl -fsSL "https://github.com/anomalyco/opencode/releases/latest/download/opencode-linux-${ARCH}.tar.gz" \
+        -o "${TMP}/opencode.tar.gz" && \
+    tar -xzf "${TMP}/opencode.tar.gz" -C "${TMP}" && \
+    mv "${TMP}/opencode" /usr/bin/opencode && \
+    chmod +x /usr/bin/opencode && \
+    rm -rf "${TMP}"
+
+COPY scripts/opencode-entrypoint.sh /opt/vandbox/scripts/opencode-entrypoint.sh
+RUN chmod +x /opt/vandbox/scripts/opencode-entrypoint.sh
+
+RUN mkdir -p /home/sandbox/.opencode /home/sandbox/.config/gcloud /home/sandbox/.config/opencode && \
+    chown -R sandbox:sandbox /home/sandbox/.opencode /home/sandbox/.config
+
+ENTRYPOINT ["/opt/vandbox/scripts/opencode-entrypoint.sh"]
+CMD ["opencode"]
