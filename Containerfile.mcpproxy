@@ -1,0 +1,14 @@
+FROM fedora:44
+
+RUN dnf install -y nodejs npm && dnf clean all
+
+COPY mcpproxy-latest-linux-amd64.tar.gz.1 /tmp/mcpproxy.tar.gz
+RUN tar -xzf /tmp/mcpproxy.tar.gz -C /usr/local/bin/ && \
+    chmod +x /usr/local/bin/mcpproxy && \
+    rm /tmp/mcpproxy.tar.gz
+
+RUN mkdir -p /root/.mcpproxy
+
+EXPOSE 8080
+
+CMD ["mcpproxy", "serve", "--listen", "0.0.0.0:8080"]

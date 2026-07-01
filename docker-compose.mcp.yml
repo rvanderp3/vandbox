@@ -1,0 +1,30 @@
+services:
+  searxng:
+    image: docker.io/searxng/searxng:latest
+    container_name: vandbox-searxng
+    volumes:
+      - ./config/searxng:/etc/searxng:Z
+    environment:
+      - BASE_URL=http://localhost:8080/
+      - INSTANCE_NAME=vandbox
+    restart: unless-stopped
+
+  mcpproxy:
+    build:
+      context: .
+      dockerfile: Containerfile.mcpproxy
+    container_name: vandbox-mcpproxy
+    ports:
+      - "8888:8080"
+    volumes:
+      - ./config/mcpproxy:/root/.mcpproxy:Z
+      - ${WORKSPACE:-/home/rvanderp/code}:/home/rvanderp/code:ro,z
+      - cbm-cache:/root/.cache/codebase-memory-mcp
+      - memory-data:/root/.local/share/mcp-memory
+    depends_on:
+      - searxng
+    restart: unless-stopped
+
+volumes:
+  cbm-cache:
+  memory-data:
