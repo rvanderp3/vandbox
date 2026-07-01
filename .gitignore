@@ -11,6 +11,9 @@ seccomp/generated.json
 # mcpproxy config (contains API key, rewritten at runtime)
 config/mcpproxy/mcp_config.json
 
+# Environment secrets
+.env
+
 # mcpproxy binary tarballs
 mcpproxy-*.tar.gz
 mcpproxy-*.tar.gz.*

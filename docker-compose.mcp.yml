@@ -7,6 +7,7 @@ services:
     environment:
       - BASE_URL=http://localhost:8080/
       - INSTANCE_NAME=vandbox
+      - SEARXNG_SECRET_KEY=${SEARXNG_SECRET_KEY}
     restart: unless-stopped
 
   mcpproxy:
