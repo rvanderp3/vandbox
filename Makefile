@@ -3,7 +3,7 @@ IMAGE_TAG ?= latest
 RECORD_TAG ?= record
 OPENCODE_TAG ?= opencode
 
-.PHONY: build build-record build-opencode run record run-opencode shell lint test-network test-binary clean
+.PHONY: build build-record build-opencode run record run-opencode mcp-up mcp-down mcp-logs shell lint test-network test-binary clean
 
 build:
 	podman build -t $(IMAGE_NAME):$(IMAGE_TAG) .
@@ -11,8 +11,11 @@ build:
 build-record:
 	podman build --build-arg INSTALL_STRACE=1 -t $(IMAGE_NAME):$(RECORD_TAG) .
 
-build-opencode: build
-	podman build -f Containerfile.opencode -t $(IMAGE_NAME):$(OPENCODE_TAG) .
+build-opencode:
+	podman build -f Containerfile.opencode \
+		--build-arg HOST_UID=$$(id -u) \
+		--build-arg HOST_GID=$$(id -g) \
+		-t $(IMAGE_NAME):$(OPENCODE_TAG) .
 
 run: build
 	./run.sh
@@ -22,6 +25,15 @@ run-opencode: build-opencode
 
 record: build-record
 	./record.sh
+
+mcp-up:
+	podman-compose -f docker-compose.mcp.yml up -d --build
+
+mcp-down:
+	podman-compose -f docker-compose.mcp.yml down
+
+mcp-logs:
+	podman-compose -f docker-compose.mcp.yml logs -f
 
 shell: build
 	podman run --rm -it \
